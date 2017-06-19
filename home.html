@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Blocs</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="static/css/styles.css">
+    <link rel="stylesheet" type="text/css" href="static/css/font-awesome.min.css">
+    <link rel="email" href="EmailTemplate.py">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <script src="static/js/jquery-3.1.1.min.js"></script>
+  </head>
+<body>
+
+    <header>
+      <h1>Blocs</h1>
+      <div id="dropdown">
+        <i class="fa fa-cog fa-lg"></i>
+        <nav id="drop">
+          <ul class="links">
+            <li id="userLabel">{{message}}</li>
+            <li id="dropProfile">Profile</li>
+            <li>Settings</li>
+            <li id="dropLogs">Logs</li>
+            <li id="dropEmail">Email List</li>
+            <li id="dropLogOut">Log Out</li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+
+      <form id="emailSender" action="/SendEmail" onsubmit="return emailSave()" method="post">
+        To: <input type="email" name="Email" placeholder="Enter email address" size="50" required>
+        <button type="submit" class="btnPrimary">Send</button><br/>
+        <input type="checkbox" name="saveEmail">Add to email list<br/>
+        <p id="response"></p>
+      </form>
+
+      <i class="fa fa-paper-plane-o fa-lg"></i>
+      <h4>Links to send: </h4>
+      <section id="sentBlocs" class="blocsContainer" ondrop="drop(event, this)" ondragover="setDrop(event)">
+          Select or Drag &amp; drop Blocs you want to send here
+      </section>
+
+      <i class="fa fa-folder-o fa-lg"></i>
+      <h4>My Portfolio: </h4>
+      <select id="portfolioFilter" onchange="blocFilter();">
+        <option selected>All</option>
+        <option>Video</option>
+        <option>Sound</option>
+        <option>Images</option>
+        <option>Article</option>
+        <option>Favourites</option>
+      </select>
+
+      <div id="resourcesHolder">
+        <section id="portfolio" class="blocsContainer" ondrop="drop(event, this)" ondragover="setDrop(event)">
+          {% for data in url %}
+          <div class="blocs" draggable="true" ondragstart="drag(event)" ondragend="endDrag(event)">
+            {% for elem in data %}
+            <input class="checkbox" type="checkbox" onchange="selectAppend(event, this)">
+
+            <i id="favoriteButton" class="fa fa-star fa-2" onclick="favorite()"></i>
+            <span class="blocTitle">{{elem}}</span>
+
+            <i id="favoriteButton" class="fa fa-star fa-2" onclick="favourite()"></i>
+            <span class="blocTitle">{{elem}}     </span>
+
+            <img src="/static/{{elem}}.jpeg" alt="notfound" max-height="100%" max-width ="100%" draggable="false">
+             {% endfor %}
+             <i id="favoriteButton" class="fa fa-star fa-2"></i>
+          </div>
+          {% endfor %}
+
+          <div class="blocs" id="AddBloc">
+            <i id="plusSign" class="fa fa-plus-square-o fa-5"></i>
+          </div>
+      </section>
+      </div>
+    </main>
+    <p id="demo"></p>
+    <div id="test">
+
+      {%block main%}
+
+      {%endblock%}
+
+    </div>
+
+
+    <!-- The Modal -->
+    <div id="profileModal" class="modal">
+      <div class="modal-content">
+        <span id="close" class="closeProfile">×</span>
+        <!-- <form class="form" onsubmit="return profile()" id="profile"> -->
+        <form class="form" method="POST" action="/hello/profile" onsubmit="return profile()" id="profile">
+          <h1 id="title">Profile</h1>
+          <hr>
+          <br />
+          <input type="text" placeholder="Establishments name" class="textbox" name="CompanyName" />
+          <input type="text" placeholder="Dentists User name" class="textbox" name="userName" />
+          <input type="text" placeholder="Post A-Level Qualifications" class="textbox" name="Qualifications" />
+          <input type="text" placeholder="Website url" class="textbox" name="Url"/>
+          <div class="custom-file-upload">
+              <input type="file" id="files" multiple name="logo"/>
+              <output id="list">
+              </output>
+          </div>
+          <input type="text" placeholder="social media link" class="textbox" name="socialMedia" />
+          <input type="submit" value="submit" class="button" />
+        </form>
+      <!-- </div> -->
+    </div>
+    </div>
+    <!-- The Modal -->
+    <div id="addBlocModal" class="modal">
+      <!-- Modal content -->
+      <div class="modal-content">
+        <span id="close" class="closeAddBloc">×</span>
+        <form class="form" method="POST" action="/hello/AddBloc" onsubmit="return AddBloc()">
+
+          <h1 id="title">Blocs</h1>
+          <hr>
+          <br />
+          <input type="text" placeholder="Bloc Title" name="blocTitle" class="textbox" />
+          <input type="text" placeholder="To what URL should this link go?" name="blocUrl" class="textbox" />
+          <input type="text" placeholder="logo" name="blocLogo" class="textbox" />
+          <!-- <input type="text" placeholder="block logo" name="blocLogo" class="textbox" /> -->
+          <select id="GenreSubmission" name="genre">
+            <option>Video</option>
+            <option>Sound</option>
+            <option>Images</option>
+            <option>Article</option>
+          </select>
+
+          <!-- <div class="inline">
+            <textarea type="text" placeholder="Your link preview" class="textbox2"></textarea>
+          </div> -->
+          <!-- <div class="outline"> -->
+          <!-- <div class="custom-file-upload">
+              <input type="file" id="files" placeholder="choose preview image" name="blocLogo" multiple />
+              <output id="list"> </output>
+            </div> -->
+
+        <!-- </div> -->
+
+          <textarea type="text" placeholder="Your Notes" class="textbox3"></textarea>
+          <button type="submit" value="save" class="button">Save</button>
+        </form>
+      </div>
+    </div>
+    <!-- The Modal -->
+    <div id="logsModal" class="modal">
+      <!-- Modal content -->
+      <div  class="modal-content">
+        <span id="close" class="closeLogs">×</span>
+        <form class="form">
+          <table class="table">
+            <h1 id="title">Sent/Logs</h1>
+            <hr>
+            <br />
+              <tr>
+                <th>Email</th>
+                <th>Patient Name</th>
+                <th>Date</th>
+                <th>Time</th>
+              </tr>
+              <br />
+              <tr>
+                <td>guy.rawsthorn@btopenworld.com</td>
+                <td>Guy Rawsthorn</td>
+                <td>17/11/16</td>
+                <td>17:00</td>
+              </tr>
+          </table>
+        </form>
+        </div>
+      </div>
+
+      </div>
+    </div>
+
+
+
+    <!-- The Modal -->
+    <div id="emailModal" class="modal">
+      <!-- Modal content -->
+      <div  class="modal-content">
+        <span  id="close" class="closeEmail">×</span>
+        <form class="form" method="GET" onsubmit="return AddBLock()">
+
+          <h1 id="title">Email List</h1>
+          <hr>
+          <br/>
+          <input type="text" placeholder="Search for a patient" name="patientSearcher" class="textbox" />
+          <div id="emailLogsHolder">
+          {%block emailLogs%}
+          <p>Page under contruction</p>
+          {% endblock %}
+          </div>
+        </form>
+      </div>
+    </div>
+
+
+
+
+    <!-- The Modal -->
+    <div id="logOutModal" class="modal">
+      <!-- Modal content -->
+      <div  class="modal-content">
+        <span  id="close" class="closeLogOut">×</span>
+        <p>log out modal</p>
+        <p>Place the html for one form in here...</p>
+      </div>
+    </div>
+    <area>
+    <p> {{image}} </p>
+    <script>
+      // Get the modal
+      var profileModal = document.getElementById('profileModal');
+      var addBlocModal = document.getElementById('addBlocModal');
+      var logsModal = document.getElementById('logsModal');
+      var emailModal = document.getElementById('emailModal');
+      var logOutModal = document.getElementById('logOutModal');
+
+      // Get the button that opens the modal
+      var dropProfile = document.getElementById("dropProfile");
+      var addBloc = document.getElementById("AddBloc");
+      var logs = document.getElementById("dropLogs");
+      var email = document.getElementById("dropEmail");
+      var logOut = document.getElementById("dropLogOut");
+      // Get the <span> element that closes the modal
+      var closeProfile = document.getElementsByClassName("closeProfile")[0];
+      var closeAddBloc = document.getElementsByClassName("closeAddBloc")[0];
+      var closeLogs = document.getElementsByClassName("closeLogs")[0];
+      var closeEmail = document.getElementsByClassName("closeEmail")[0];
+      var closeLogOut = document.getElementsByClassName("closeLogOut")[0];
+
+      // When the user clicks the button, open the modal
+      dropProfile.onclick = function() {
+          profileModal.style.display = "block";
+
+      }
+
+      addBloc.onclick = function() {
+          addBlocModal.style.display = "block";
+      }
+      logs.onclick = function() {
+          logsModal.style.display = "block";
+      }
+      email.onclick = function() {
+
+        emailModal.style.display = "block";
+
+
+
+
+          if (window.XMLHttpRequest) {
+
+              xmlhttp = new XMLHttpRequest();
+          } else {
+
+              xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+          }
+          xmlhttp.onreadystatechange = function() {
+              if (this.readyState == 4 && this.status == 200) {
+                  document.getElementById("emailLogsHolder").innerHTML = this.responseText;
+              }
+          };
+            xmlhttp.open("GET","/GetEmailLogs",true);
+            xmlhttp.send();
+
+
+
+
+      }
+      logOut.onclick = function() {
+          logOutModal.style.display = "block";
+      }
+      // When the user clicks on <span> (x), close the modal
+      closeProfile.onclick = function() {
+          profileModal.style.display = "none";
+      }
+      closeAddBloc.onclick = function() {
+          addBlocModal.style.display = "none";
+      }
+      closeLogs.onclick = function() {
+          logsModal.style.display = "none";
+      }
+      closeEmail.onclick = function() {
+          emailModal.style.display = "none";
+      }
+      closeLogOut.onclick = function() {
+          logOutModal.style.display = "none";
+      }
+
+      // When the user clicks anywhere outside of the modal, close it
+      window.onclick = function(event) {
+          if (event.target == profileModal) {
+             profileModal.style.display = "none";
+          }
+          else if (event.target == addBlocModal) {
+             addBlocModal.style.display = "none";
+          }
+          else if (event.target == logsModal) {
+             logsModal.style.display = "none";
+          }
+          else if (event.target == emailModal) {
+             emailModal.style.display = "none";
+          }
+          else if (event.target == logOutModal) {
+             logOutModal.style.display = "none";
+          }
+      }
+    </script>
+    <script>
+      function emailSave() {
+        if(document.forms['emailSender']['saveEmail'].checked == true) {
+          var emailAddr = document.forms['emailSender']['Email'].value;
+          params = 'Email='+emailAddr;
+          var x = new XMLHttpRequest();
+          x.open('POST', '/addEmail', true);
+          x.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+          x.onload = function() {
+            if (x.readyState === 4 && x.status === 200) {
+              console.log(x.responseText);
+              document.getElementById("response").innerHTML = x.responseText;
+            } else {
+              console.error(x.statusText);
+            }
+          };
+          x.send(params);
+          // Return false isn't used here as it would stop the form running the
+          // send action
+        }
+      }
+
+      // function emailPredict() {
+      //   var emailAddr = document.forms['emailSender']['Email'];
+      //   $.ajax({url: '/emailPredict', data: 'Email='+emailAddr.value, success: function(result){
+      //     console.log(result.responseText);
+      //     emailAddr.innerHTML = result.responseText;
+      //   }});
+      // }
+    </script>
+
+    <script>
+      // function email(){
+      //   var divsToEmail = document.getElementById("sentBlocs").childNodes.length;
+      //   var parentElement = document.getElementById("sentBlocs")
+      //   var childElement = document.getElementsByClassName("blocs")
+      //   // document.getElementById("demo").innerHTML = divsToEmail;
+      //   var decendant = isDescendant(parentElement, childElement)
+      //
+      //   if (decendant == true) {
+      //     var divContentToEmail = []
+      //     if (divsToEmail == 1) {
+      //       divContentToEmail = document.getElementsByClassName("blocTitle").innerHTML
+      //     }
+      //     else {
+      //       // for (var i = 0; i == divsToEmail; i++) {
+      //         divContentToEmail[] = document.getElementsByClassName("blocTitle").innerHTML
+      //       // }
+      //     }
+      //   }
+      //   else {
+      //     //pop up saying theres nothing to email
+      //   }
+      //   // document.getElementById("demo").innerHTML = divContentToEmail
+      //   // for (var i = 0; i == divsToEmail; i++) {
+      //     var text = document.getElementById("sentBlocs").childNodes[0].text;
+      //     document.getElementById("demo").innerHTML = text;
+      //   // }
+      // }
+      //
+      // function isDescendant(parent, child) {
+      // var node = child.parentNode;
+      // while (node != null) {
+      //    if (node == parent) {
+      //        return true;
+      //    }
+      //    node = node.parentNode;
+      // }
+      // return false;
+      // }
+
+      function favourite(){
+        var value = document.getElementById("").value;
+        if (window.XMLHttpRequest) {
+            // code for IE7+, Firefox, Chrome, Opera, Safari
+            xmlhttp = new XMLHttpRequest();
+        } else {
+            // code for IE6, IE5
+            xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+        }
+        xmlhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                document.getElementById("portfolio").innerHTML = this.responseText;
+            }
+        };
+          xmlhttp.open("GET","/load/"+value,false);
+          xmlhttp.send();
+
+
+      }
+      </script>
+
+      <script>
+    //   function Profile() {
+    //   var xhttp = new XMLHttpRequest();
+    //   xhttp.open("POST", '/hello/profile', true); // true is asynchronous
+    //   xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    //   xhttp.onload = function() {
+    //     if (xhttp.readyState === 4 && xhttp.status === 200) {
+    //       console.log(xhttp.responseText);
+    //       document.getElementById("txt").innerHTML = xhttp.responseText;
+    //     } else {
+    //       console.error(xhttp.statusText);
+    //     }
+    //   };
+    //   xhttp.send(params);
+    //   return false;
+    // }
+    // function profile() {}
+    //   console.log('Profile');
+    // }
+    //   alert('profile');
+    //   var CompanyName = document.forms["profile"]["CompanyName"].value;
+    //   var Qualifications = document.forms["profile"]["Qualifications"].value;
+    //   var Url = document.forms["profile"]["Url"].value;
+    //   var Logo = document.forms["profile"]["Logo"].value;
+    //   var socialMedia = document.forms["profile"]["socialMedia"].value;
+    // //   // params = 'CompanyName='+CompanyName+'&Qualifications='+Qualifications+'&Url='+Url+'&Logo'+Logo+'&socialMedia'+socialMedia+;
+    //   params = '&socialMedia'+socialMedia+;
+    //   var xhttp = new XMLHttpRequest();
+    //   xhttp.open("POST", '/hello/profile', true); // true is asynchronous
+    //   xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    //   xhttp.onload = function() {
+    //     if (xhttp.readyState === 4 && xhttp.status === 200) {
+    //       console.log(xhttp.responseText);
+    //       document.getElementById("txt").innerHTML = xhttp.responseText;
+    //     } else {
+    //       console.error(xhttp.statusText);
+    //     }
+    //    };
+    // xhttp.send(params);
+    //   return false;
+    // }
+
+
+    </script>
+
+    <script src="static/js/app_functions.js"></script>
+    <script src="static/js/browse.js"></script>
+  </body>
+</html>
